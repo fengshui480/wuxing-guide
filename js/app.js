@@ -151,9 +151,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var hash = await sha256(code);
 
-    // 检查是否已被使用过
-    var usedCodes = JSON.parse(localStorage.getItem('usedCodes') || '[]');
-    var isUsed = usedCodes.indexOf(hash) !== -1;
+    // 生成用户身份指纹（出生日期绑定）
+    var userBirth = pendingReport.userInfo.birthDate;
+    var userFingerprint = await sha256(code + '|' + userBirth);
+
+    // 检查码的绑定状态
+    var codeBindings = JSON.parse(localStorage.getItem('codeBindings') || '{}');
+    var boundFingerprint = codeBindings[hash];
 
     if (typeof CODE_HASHES === 'undefined' || !CODE_HASHES.has(hash)) {
       // 码不存在
@@ -162,17 +166,17 @@ document.addEventListener('DOMContentLoaded', function () {
       codeInput.classList.add('input-error');
       btn.textContent = '解锁完整报告';
       btn.disabled = false;
-    } else if (isUsed) {
-      // 码已被使用
+    } else if (boundFingerprint && boundFingerprint !== userFingerprint) {
+      // 码已绑定给其他用户
       errorEl.style.display = '';
-      errorEl.textContent = '该访问码已被使用，请购买新的访问码';
+      errorEl.textContent = '该访问码已绑定其他用户，请购买新的访问码';
       codeInput.classList.add('input-error');
       btn.textContent = '解锁完整报告';
       btn.disabled = false;
     } else {
-      // 验证通过，标记为已使用
-      usedCodes.push(hash);
-      localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
+      // 验证通过，绑定码与用户
+      codeBindings[hash] = userFingerprint;
+      localStorage.setItem('codeBindings', JSON.stringify(codeBindings));
 
       errorEl.style.display = 'none';
       codeInput.classList.remove('input-error');

@@ -8,8 +8,121 @@
 </head>
 <body>
   <div id="app">
-    <section id="form-section"></section>
-    <section id="report-section" style="display:none"></section>
+
+    <!-- ── 输入表单 ──────────────────────────────────────────────────── -->
+    <section id="form-section">
+      <div class="form-container">
+        <div class="form-header">
+          <h1 class="brand-title">玄学形象指南</h1>
+          <p class="brand-subtitle">五行 × 形象设计 · 今日专属方案</p>
+        </div>
+        <form id="user-form">
+          <div class="form-group required">
+            <label>性别</label>
+            <div class="radio-group">
+              <label class="radio-card">
+                <input type="radio" name="gender" value="female" checked>
+                <span>女</span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="gender" value="male">
+                <span>男</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group required">
+            <label>出生日期</label>
+            <div class="date-inputs">
+              <select id="birth-year" required></select>
+              <select id="birth-month" required></select>
+              <select id="birth-day" required></select>
+            </div>
+          </div>
+
+          <div class="form-group optional">
+            <label>城市 <span class="optional-tag">选填</span></label>
+            <input type="text" id="city" placeholder="如：北京、上海、杭州">
+          </div>
+
+          <div class="form-group optional">
+            <label>行业/职业 <span class="optional-tag">选填</span></label>
+            <input type="text" id="industry" placeholder="如：互联网、金融、教育">
+          </div>
+
+          <button type="submit" class="submit-btn">生成我的形象指南</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ── 报告展示 ──────────────────────────────────────────────────── -->
+    <section id="report-section" style="display:none">
+      <div class="report-container">
+
+        <!-- 报告头部 -->
+        <div class="report-header">
+          <p class="report-date" id="report-date"></p>
+          <div class="report-user-info" id="report-user-info"></div>
+        </div>
+
+        <!-- 卡片 1: 气场指数 -->
+        <div class="report-card card-aura-score">
+          <h2 class="card-title">今日气场指数</h2>
+          <div class="aura-score-display">
+            <span class="score-number" id="aura-score"></span>
+          </div>
+          <div class="score-bar-wrapper">
+            <div class="score-bar">
+              <div class="score-bar-fill" id="score-bar-fill"></div>
+            </div>
+          </div>
+          <p class="score-percentile" id="score-percentile"></p>
+        </div>
+
+        <!-- 卡片 2: 气场关键词 -->
+        <div class="report-card card-aura-keywords">
+          <h2 class="card-title">气场关键词</h2>
+          <div class="keywords-row" id="aura-keywords"></div>
+        </div>
+
+        <!-- 卡片 3: 开运色卡 -->
+        <div class="report-card card-colors">
+          <h2 class="card-title">开运色卡</h2>
+          <div class="color-groups" id="color-groups"></div>
+        </div>
+
+        <!-- 卡片 4: 命定穿搭 -->
+        <div class="report-card card-style">
+          <h2 class="card-title">命定穿搭</h2>
+          <div class="style-keyword-wrap">
+            <span class="style-keyword" id="style-keyword"></span>
+          </div>
+          <div class="scene-cards" id="scene-cards"></div>
+          <div class="accessory-section" id="accessory-section"></div>
+        </div>
+
+        <!-- 卡片 5: 开运妆容 -->
+        <div class="report-card card-makeup">
+          <h2 class="card-title">开运妆容</h2>
+          <div class="makeup-keyword-wrap">
+            <span class="makeup-keyword" id="makeup-keyword"></span>
+          </div>
+          <div class="makeup-rows" id="makeup-rows"></div>
+        </div>
+
+        <!-- 报告尾部 -->
+        <div class="report-footer">
+          <p class="explanation-text" id="explanation-text"></p>
+          <p class="watermark">玄学形象指南 · 五行 × 形象设计</p>
+          <p class="hashtags">#气场指数 #五行穿搭 #开运妆容 #命定色卡</p>
+        </div>
+
+        <!-- 重新测试按钮 -->
+        <button class="retry-btn" id="retry-btn">重新测试</button>
+
+      </div>
+    </section>
+
   </div>
   <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.js"></script>
   <script src="js/mapping-data.js"></script>

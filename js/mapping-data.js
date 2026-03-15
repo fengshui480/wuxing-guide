@@ -168,9 +168,9 @@ const WUXING_DATA = {
     '金': {
       keyword: '清冷利落',
       scenes: {
-        commute: '极简主义通勤',
-        casual: '都市冷淡风',
-        date: '高级禁欲系'
+        commute: '极简主义通勤：修身剪裁西装外套 + 直筒裤，线条感为主',
+        casual: '都市冷淡风：oversized 纯色T恤 + 金属扣阔腿裤',
+        date: '高级禁欲系：缎面衬衫 + 精致金属腰带'
       },
       accessory: {
         material: '金属',
@@ -181,9 +181,9 @@ const WUXING_DATA = {
     '木': {
       keyword: '舒展自然',
       scenes: {
-        commute: '文艺知性风',
-        casual: '森系清新',
-        date: '温柔邻家'
+        commute: '文艺知性风：亚麻衬衫 + 棉质阔腿裤，自然垂坠感',
+        casual: '森系清新：碎花连衣裙 + 编织草帽',
+        date: '温柔邻家：针织开衫 + 棉麻长裙'
       },
       accessory: {
         material: '木质/棉麻',
@@ -194,9 +194,9 @@ const WUXING_DATA = {
     '水': {
       keyword: '柔和流动',
       scenes: {
-        commute: '法式通勤',
-        casual: '慵懒文艺',
-        date: '神秘优雅'
+        commute: '法式通勤：雪纺衬衫 + 高腰伞裙，流动飘逸',
+        casual: '慵懒文艺：oversized 针织毛衣 + 水洗牛仔',
+        date: '神秘优雅：深色丝绒连衣裙 + 水晶耳坠'
       },
       accessory: {
         material: '水晶/珍珠',
@@ -207,9 +207,9 @@ const WUXING_DATA = {
     '火': {
       keyword: '张扬明艳',
       scenes: {
-        commute: '港风干练',
-        casual: '辣妹热情',
-        date: '复古女王'
+        commute: '港风干练：收腰皮衣外套 + 高腰铅笔裙',
+        casual: '辣妹热情：紧身上衣 + 高腰热裤 + 粗跟短靴',
+        date: '复古女王：丝绸吊带裙 + 红色高跟鞋'
       },
       accessory: {
         material: '皮革/真丝',
@@ -220,9 +220,9 @@ const WUXING_DATA = {
     '土': {
       keyword: '沉稳厚重',
       scenes: {
-        commute: '经典知性',
-        casual: '温暖质感',
-        date: '优雅大气'
+        commute: '经典知性：驼色大衣 + 高领打底 + 及膝裙',
+        casual: '温暖质感：粗棒针毛衣 + 灯芯绒裤',
+        date: '优雅大气：一字肩连衣裙 + 玉石项链'
       },
       accessory: {
         material: '玉石/陶瓷',

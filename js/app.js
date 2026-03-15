@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ── Helper: 分数计数动画 ──────────────────────────────────────────────────
 
   function animateScore(target) {
-    var el = document.getElementById('score-number');
+    var el = document.getElementById('aura-score');
     var current = 0;
     var duration = 1000; // 1 second
     var steps = 30;

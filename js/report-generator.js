@@ -57,7 +57,7 @@ const ReportGenerator = (function () {
       accent:     yongColors.main[0],
       avoid:      jiColors.main[0],
       mainAll:    xiColors.main,
-      accentAll:  yongColors.main,
+      accentAll:  yongColors.accent,
       avoidAll:   jiColors.main,
       xiElement:  xiEl,
       yongElement: yongEl,

@@ -151,8 +151,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var hash = await sha256(code);
 
-    if (typeof CODE_HASHES !== 'undefined' && CODE_HASHES.has(hash)) {
-      // 验证通过
+    // 检查是否已被使用过
+    var usedCodes = JSON.parse(localStorage.getItem('usedCodes') || '[]');
+    var isUsed = usedCodes.indexOf(hash) !== -1;
+
+    if (typeof CODE_HASHES === 'undefined' || !CODE_HASHES.has(hash)) {
+      // 码不存在
+      errorEl.style.display = '';
+      errorEl.textContent = '访问码无效，请检查后重试';
+      codeInput.classList.add('input-error');
+      btn.textContent = '解锁完整报告';
+      btn.disabled = false;
+    } else if (isUsed) {
+      // 码已被使用
+      errorEl.style.display = '';
+      errorEl.textContent = '该访问码已被使用，请购买新的访问码';
+      codeInput.classList.add('input-error');
+      btn.textContent = '解锁完整报告';
+      btn.disabled = false;
+    } else {
+      // 验证通过，标记为已使用
+      usedCodes.push(hash);
+      localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
+
       errorEl.style.display = 'none';
       codeInput.classList.remove('input-error');
 
@@ -167,13 +188,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         renderReport(pendingReport);
       }, 300);
-    } else {
-      // 验证失败
-      errorEl.style.display = '';
-      errorEl.textContent = '访问码无效，请检查后重试';
-      codeInput.classList.add('input-error');
-      btn.textContent = '解锁完整报告';
-      btn.disabled = false;
     }
   });
 

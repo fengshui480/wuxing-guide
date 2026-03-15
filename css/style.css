@@ -798,6 +798,37 @@ body {
   color: var(--gold);
   font-size: 18px;
 }
+.price-original {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.buy-btn {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(184,134,11,0.25);
+  transition: all 0.2s;
+}
+.buy-btn:hover {
+  background: linear-gradient(135deg, #a07608, #c49b38);
+  box-shadow: 0 6px 20px rgba(184,134,11,0.35);
+  transform: translateY(-1px);
+}
+.buy-btn:active {
+  transform: translateY(0);
+}
 .qr-placeholder {
   margin: 16px auto;
   width: 180px;

@@ -80,6 +80,34 @@ document.addEventListener('DOMContentLoaded', function () {
     return hashArray.map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
   }
 
+  // ── Supabase 配置 ──────────────────────────────────────────────────────────
+  var SUPABASE_URL = 'https://anxjoosxywnoitgdqdrc.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFueGpvb3N4eXdub2l0Z2RxZHJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NzU1MjAsImV4cCI6MjA4OTE1MTUyMH0.kiB-2ichv6ytuaxklFbV05P69inNRHsmS_M9nC_NfiE';
+
+  async function checkCodeUsed(hash) {
+    try {
+      var resp = await fetch(SUPABASE_URL + '/rest/v1/used_codes?code_hash=eq.' + hash + '&select=id', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      var data = await resp.json();
+      return data.length > 0;
+    } catch (e) { return false; }
+  }
+
+  async function markCodeUsed(hash) {
+    try {
+      await fetch(SUPABASE_URL + '/rest/v1/used_codes', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code_hash: hash })
+      });
+    } catch (e) { /* ignore */ }
+  }
+
   // ── 暂存报告数据（表单→验证码→报告的中间态） ──────────────────────────────
   var pendingReport = null;
 
@@ -151,32 +179,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var hash = await sha256(code);
 
-    // 生成用户身份指纹（出生日期绑定）
-    var userBirth = pendingReport.userInfo.birthDate;
-    var userFingerprint = await sha256(code + '|' + userBirth);
-
-    // 检查码的绑定状态
-    var codeBindings = JSON.parse(localStorage.getItem('codeBindings') || '{}');
-    var boundFingerprint = codeBindings[hash];
-
+    // 1. 检查码是否存在
     if (typeof CODE_HASHES === 'undefined' || !CODE_HASHES.has(hash)) {
-      // 码不存在
       errorEl.style.display = '';
       errorEl.textContent = '访问码无效，请检查后重试';
       codeInput.classList.add('input-error');
       btn.textContent = '解锁完整报告';
       btn.disabled = false;
-    } else if (boundFingerprint && boundFingerprint !== userFingerprint) {
-      // 码已绑定给其他用户
+      return;
+    }
+
+    // 2. 检查码是否已被使用（服务端验证）
+    var isUsed = await checkCodeUsed(hash);
+    if (isUsed) {
       errorEl.style.display = '';
-      errorEl.textContent = '该访问码已绑定其他用户，请购买新的访问码';
+      errorEl.textContent = '该访问码已被使用，请购买新的访问码';
       codeInput.classList.add('input-error');
       btn.textContent = '解锁完整报告';
       btn.disabled = false;
-    } else {
-      // 验证通过，绑定码与用户
-      codeBindings[hash] = userFingerprint;
-      localStorage.setItem('codeBindings', JSON.stringify(codeBindings));
+      return;
+    }
+
+    // 3. 验证通过，标记为已使用（服务端记录）
+    await markCodeUsed(hash);
+
+    {
 
       errorEl.style.display = 'none';
       codeInput.classList.remove('input-error');

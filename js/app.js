@@ -1,6 +1,6 @@
 /**
  * app.js
- * 玄学形象指南 — 应用入口
+ * 玄学形象指南 — 应用入口 + 动画
  */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   initForm();
 
-  // ── 表单提交 ──────────────────────────────────────────────────────────────
+  // ── 表单提交（含 loading 状态 + 淡出过渡） ──────────────────────────────
 
   document.getElementById('user-form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -83,17 +83,68 @@ document.addEventListener('DOMContentLoaded', function () {
     var city    = document.getElementById('city').value.trim() || null;
     var industry = document.getElementById('industry').value.trim() || null;
 
-    var report = ReportGenerator.generate({ year, month, day, gender, city, industry });
-    renderReport(report);
+    // Loading state
+    var btn = document.querySelector('.submit-btn');
+    var originalText = btn.textContent;
+    btn.textContent = '正在解读五行...';
+    btn.disabled = true;
+
+    // 800ms 延迟 + 淡出动画 → 生成报告 → 淡入
+    setTimeout(function () {
+      var report = ReportGenerator.generate({ year: year, month: month, day: day, gender: gender, city: city, industry: industry });
+
+      var formSection = document.getElementById('form-section');
+      formSection.classList.add('fading-out');
+
+      setTimeout(function () {
+        formSection.style.display = 'none';
+        formSection.classList.remove('fading-out');
+
+        // Restore button for next time
+        btn.textContent = originalText;
+        btn.disabled = false;
+
+        renderReport(report);
+      }, 300);
+    }, 800);
   });
 
-  // ── 重新测试 ──────────────────────────────────────────────────────────────
+  // ── 重新测试（含淡出过渡） ────────────────────────────────────────────────
 
   document.getElementById('retry-btn').addEventListener('click', function () {
-    document.getElementById('report-section').style.display = 'none';
-    document.getElementById('form-section').style.display   = '';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    var reportSection = document.getElementById('report-section');
+    reportSection.classList.add('fading-out');
+
+    setTimeout(function () {
+      reportSection.style.display = 'none';
+      reportSection.classList.remove('fading-out');
+
+      var formSection = document.getElementById('form-section');
+      formSection.style.display = '';
+      // Force reflow so the fade-in triggers properly
+      formSection.offsetHeight; // eslint-disable-line no-unused-expressions
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300);
   });
+
+  // ── Helper: 分数计数动画 ──────────────────────────────────────────────────
+
+  function animateScore(target) {
+    var el = document.getElementById('score-number');
+    var current = 0;
+    var duration = 1000; // 1 second
+    var steps = 30;
+    var increment = target / steps;
+    var interval = duration / steps;
+    var timer = setInterval(function () {
+      current += increment;
+      if (current >= target) {
+        current = target;
+        clearInterval(timer);
+      }
+      el.textContent = Math.round(current);
+    }, interval);
+  }
 
   // ── Helper: 渲染色块组 ────────────────────────────────────────────────────
 
@@ -107,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function renderColorGroup(label, colors, type) {
     var swatchesHtml = colors.map(function (c) {
       return '<div class="color-swatch">' +
-               '<span class="swatch-circle" style="background:' + c.hex + ';border:1px solid rgba(0,0,0,.08)"></span>' +
+               '<span class="swatch-circle" style="background:' + c.hex + '"></span>' +
                '<span class="swatch-name">' + c.name + '</span>' +
              '</div>';
     }).join('');
@@ -141,10 +192,15 @@ document.addEventListener('DOMContentLoaded', function () {
   // ── 主渲染函数 ────────────────────────────────────────────────────────────
 
   function renderReport(report) {
-    // 切换显示
-    document.getElementById('form-section').style.display   = 'none';
-    document.getElementById('report-section').style.display = '';
+    // 显示报告区
+    var reportSection = document.getElementById('report-section');
+    reportSection.style.display = '';
+    reportSection.style.opacity = '0';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 触发 reflow 后淡入
+    reportSection.offsetHeight; // eslint-disable-line no-unused-expressions
+    reportSection.style.opacity = '';
 
     // ── 报告头部 ──────────────────────────────────────────────────────────
     var now = new Date();
@@ -162,8 +218,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('report-user-info').innerHTML = infoHtml;
 
     // ── 气场指数 ──────────────────────────────────────────────────────────
-    document.getElementById('aura-score').textContent = report.auraScore;
-    document.getElementById('score-bar-fill').style.width = report.auraScore + '%';
+    // Prep score number to 0 (will animate)
+    document.getElementById('aura-score').textContent = '0';
+    // Reset progress bar to 0 so transition plays
+    document.getElementById('score-bar-fill').style.width = '0';
     document.getElementById('score-percentile').textContent =
       '超越了今日 ' + report.auraPercentile + '% 的人';
 
@@ -226,6 +284,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── 报告尾部 ──────────────────────────────────────────────────────────
     document.getElementById('explanation-text').textContent = report.explanation;
+
+    // ── 卡片交错淡入动画 ──────────────────────────────────────────────────
+    var cards = document.querySelectorAll('#report-section .report-card');
+    cards.forEach(function (card) {
+      card.classList.remove('visible');
+    });
+
+    cards.forEach(function (card, i) {
+      setTimeout(function () {
+        card.classList.add('visible');
+      }, 80 + i * 150);
+    });
+
+    // ── 分数动画（在首张卡片出现后启动） ──────────────────────────────────
+    setTimeout(function () {
+      animateScore(report.auraScore);
+      // 进度条动画：在 score 动画时同步展开
+      setTimeout(function () {
+        document.getElementById('score-bar-fill').style.width = report.auraScore + '%';
+      }, 30);
+    }, 80);
   }
 
 });

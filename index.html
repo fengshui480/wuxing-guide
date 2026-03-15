@@ -58,6 +58,33 @@
       </div>
     </section>
 
+    <!-- ── 访问码验证 ────────────────────────────────────────────────── -->
+    <section id="code-section" style="display:none">
+      <div class="form-container">
+        <div class="form-header">
+          <h1 class="brand-title">解锁报告</h1>
+          <p class="brand-subtitle">请输入您的专属访问码</p>
+        </div>
+        <div class="code-input-area">
+          <input type="text" id="access-code" class="code-input" placeholder="请输入8位访问码" maxlength="8" autocomplete="off" spellcheck="false">
+          <p class="code-error" id="code-error" style="display:none">访问码无效，请检查后重试</p>
+          <button type="button" class="submit-btn" id="verify-btn">解锁完整报告</button>
+        </div>
+        <div class="code-help">
+          <p class="code-help-title">如何获取访问码？</p>
+          <div class="payment-qr-area" id="payment-qr-area">
+            <p class="code-help-text">扫描下方二维码支付 <strong>¥9.9</strong></p>
+            <p class="code-help-text">支付后将自动获得访问码</p>
+            <div class="qr-placeholder" id="qr-placeholder">
+              <p>收款码位置</p>
+              <p class="qr-note">（请替换为您的收款二维码图片）</p>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="back-btn" id="back-to-form">返回修改信息</button>
+      </div>
+    </section>
+
     <!-- ── 报告展示 ──────────────────────────────────────────────────── -->
     <section id="report-section" style="display:none">
       <div class="report-container">
@@ -128,6 +155,7 @@
 
   </div>
   <script src="js/lunar.js"></script>
+  <script src="js/code-hashes.js"></script>
   <script src="js/mapping-data.js"></script>
   <script src="js/wuxing-engine.js"></script>
   <script src="js/report-generator.js"></script>

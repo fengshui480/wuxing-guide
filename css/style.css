@@ -739,6 +739,105 @@ body {
   background: #f5edd8;
 }
 
+/* ── 访问码验证页 ────────────────────────────────────────────────────────── */
+.code-input-area {
+  margin-top: 28px;
+  text-align: center;
+}
+.code-input {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 20px;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  letter-spacing: 6px;
+  text-align: center;
+  text-transform: uppercase;
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.code-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,134,11,0.1);
+}
+.code-input.input-error {
+  border-color: #d45;
+  box-shadow: 0 0 0 3px rgba(221,68,85,0.1);
+}
+.code-error {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #d45;
+}
+#code-section .submit-btn {
+  margin-top: 16px;
+}
+.code-help {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--card-border);
+  text-align: center;
+}
+.code-help-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+.code-help-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.code-help-text strong {
+  color: var(--gold);
+  font-size: 18px;
+}
+.qr-placeholder {
+  margin: 16px auto;
+  width: 180px;
+  height: 180px;
+  border: 2px dashed var(--card-border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.qr-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+.qr-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.back-btn {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.back-btn:hover {
+  color: var(--text-secondary);
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    RESPONSIVE — Mobile-first (375–428px)
    ══════════════════════════════════════════════════════════════════════════ */

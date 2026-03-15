@@ -71,7 +71,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
   initForm();
 
-  // ── 表单提交（含 loading 状态 + 淡出过渡） ──────────────────────────────
+  // ── SHA-256 哈希函数 ───────────────────────────────────────────────────────
+
+  async function sha256(message) {
+    var msgBuffer = new TextEncoder().encode(message);
+    var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    var hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+
+  // ── 暂存报告数据（表单→验证码→报告的中间态） ──────────────────────────────
+  var pendingReport = null;
+
+  // ── 表单提交 → 跳转到验证码页 ──────────────────────────────────────────────
 
   document.getElementById('user-form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -83,15 +95,17 @@ document.addEventListener('DOMContentLoaded', function () {
     var city    = document.getElementById('city').value.trim() || null;
     var industry = document.getElementById('industry').value.trim() || null;
 
-    // Loading state
-    var btn = document.querySelector('.submit-btn');
+    var btn = document.querySelector('#user-form .submit-btn');
     var originalText = btn.textContent;
     btn.textContent = '正在解读五行...';
     btn.disabled = true;
 
-    // 800ms 延迟 + 淡出动画 → 生成报告 → 淡入
     setTimeout(function () {
-      var report = ReportGenerator.generate({ year: year, month: month, day: day, gender: gender, city: city, industry: industry });
+      // 预生成报告，暂存
+      pendingReport = ReportGenerator.generate({
+        year: year, month: month, day: day,
+        gender: gender, city: city, industry: industry
+      });
 
       var formSection = document.getElementById('form-section');
       formSection.classList.add('fading-out');
@@ -99,17 +113,91 @@ document.addEventListener('DOMContentLoaded', function () {
       setTimeout(function () {
         formSection.style.display = 'none';
         formSection.classList.remove('fading-out');
-
-        // Restore button for next time
         btn.textContent = originalText;
         btn.disabled = false;
 
-        renderReport(report);
+        // 显示验证码页
+        var codeSection = document.getElementById('code-section');
+        codeSection.style.display = '';
+        codeSection.style.opacity = '0';
+        codeSection.offsetHeight;
+        codeSection.style.opacity = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // 清除上次的错误和输入
+        document.getElementById('access-code').value = '';
+        document.getElementById('code-error').style.display = 'none';
       }, 300);
     }, 800);
   });
 
-  // ── 重新测试（含淡出过渡） ────────────────────────────────────────────────
+  // ── 验证码校验 → 显示报告 ──────────────────────────────────────────────────
+
+  document.getElementById('verify-btn').addEventListener('click', async function () {
+    var codeInput = document.getElementById('access-code');
+    var code = codeInput.value.trim().toUpperCase();
+    var errorEl = document.getElementById('code-error');
+
+    if (code.length !== 8) {
+      errorEl.style.display = '';
+      errorEl.textContent = '请输入8位访问码';
+      codeInput.classList.add('input-error');
+      return;
+    }
+
+    var btn = document.getElementById('verify-btn');
+    btn.textContent = '验证中...';
+    btn.disabled = true;
+
+    var hash = await sha256(code);
+
+    if (typeof CODE_HASHES !== 'undefined' && CODE_HASHES.has(hash)) {
+      // 验证通过
+      errorEl.style.display = 'none';
+      codeInput.classList.remove('input-error');
+
+      var codeSection = document.getElementById('code-section');
+      codeSection.classList.add('fading-out');
+
+      setTimeout(function () {
+        codeSection.style.display = 'none';
+        codeSection.classList.remove('fading-out');
+        btn.textContent = '解锁完整报告';
+        btn.disabled = false;
+
+        renderReport(pendingReport);
+      }, 300);
+    } else {
+      // 验证失败
+      errorEl.style.display = '';
+      errorEl.textContent = '访问码无效，请检查后重试';
+      codeInput.classList.add('input-error');
+      btn.textContent = '解锁完整报告';
+      btn.disabled = false;
+    }
+  });
+
+  // Enter 键触发验证
+  document.getElementById('access-code').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      document.getElementById('verify-btn').click();
+    }
+  });
+
+  // ── 返回修改信息 ──────────────────────────────────────────────────────────
+
+  document.getElementById('back-to-form').addEventListener('click', function () {
+    var codeSection = document.getElementById('code-section');
+    codeSection.classList.add('fading-out');
+    setTimeout(function () {
+      codeSection.style.display = 'none';
+      codeSection.classList.remove('fading-out');
+      document.getElementById('form-section').style.display = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300);
+  });
+
+  // ── 重新测试（报告页→表单页） ──────────────────────────────────────────────
 
   document.getElementById('retry-btn').addEventListener('click', function () {
     var reportSection = document.getElementById('report-section');
@@ -121,8 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       var formSection = document.getElementById('form-section');
       formSection.style.display = '';
-      // Force reflow so the fade-in triggers properly
-      formSection.offsetHeight; // eslint-disable-line no-unused-expressions
+      formSection.offsetHeight;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 300);
   });

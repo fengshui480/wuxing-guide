@@ -241,6 +241,25 @@ const WuxingEngine = (function () {
     return Math.max(25, Math.min(98, Math.round(pct)));
   }
 
+  /**
+   * 9. 今日通用五行穿衣（主流博主方法，所有人同一天结果相同）
+   *    基于今日日干五行，按生克关系推算：
+   *    大吉色 = 生今日五行的元素（生我者 → 印）
+   *    次吉色 = 与今日五行相同的元素（同我者 → 比）
+   *    不宜色 = 今日五行所克的元素（我克者 → 财）
+   * @param {Object} todayInfo - 来自 getTodayInfo()
+   * @returns {{ daji: string, ciji: string, buyi: string, todayElement: string }}
+   */
+  function getTodayUniversalColors(todayInfo) {
+    const todayEl = todayInfo.dayGanWuxing;
+    return {
+      todayElement: todayEl,
+      daji: DATA.BEI_SHENG[todayEl],  // 生我者 → 大吉
+      ciji: todayEl,                    // 同我者 → 次吉
+      buyi: DATA.SHENG[todayEl]        // 我克者 → 不宜（注：我生者为泄，我克者为财，主流用"我克"作为不宜）
+    };
+  }
+
   // ── 暴露公共 API ────────────────────────────────────────────────────────────
   return {
     getBazi,
@@ -249,6 +268,7 @@ const WuxingEngine = (function () {
     isDayMasterStrong,
     getXiyongshen,
     getTodayInfo,
+    getTodayUniversalColors,
     calcAuraScore,
     calcPercentile
   };

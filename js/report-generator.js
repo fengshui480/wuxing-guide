@@ -45,23 +45,41 @@ const ReportGenerator = (function () {
   }
 
   /**
-   * 构建颜色信息对象
+   * 构建颜色信息对象（两套体系）
+   * universalColors: 今日通用五行穿衣（和主流博主一致）
+   * personalColors: 个人专属加持色（基于八字喜用神）
    */
-  function buildColors(xiEl, yongEl, jiEl) {
-    const xiColors  = DATA.COLORS[xiEl]  || DATA.COLORS['金'];
-    const yongColors = DATA.COLORS[yongEl] || DATA.COLORS['金'];
-    const jiColors  = DATA.COLORS[jiEl]  || DATA.COLORS['金'];
+  function buildColors(xiEl, yongEl, jiEl, todayUniversal) {
+    // 通用色（基于今日日干，所有人相同）
+    var dajiEl = todayUniversal.daji;
+    var cijiEl = todayUniversal.ciji;
+    var buyiEl = todayUniversal.buyi;
+
+    var dajiColors = DATA.COLORS[dajiEl] || DATA.COLORS['金'];
+    var cijiColors = DATA.COLORS[cijiEl] || DATA.COLORS['金'];
+    var buyiColors = DATA.COLORS[buyiEl] || DATA.COLORS['金'];
+
+    // 个人色（基于喜用神）
+    var xiColors   = DATA.COLORS[xiEl]   || DATA.COLORS['金'];
 
     return {
-      main:       xiColors.main[0],
-      accent:     yongColors.main[0],
-      avoid:      jiColors.main[0],
-      mainAll:    xiColors.main,
-      accentAll:  yongColors.accent,
-      avoidAll:   jiColors.main,
-      xiElement:  xiEl,
-      yongElement: yongEl,
-      jiElement:  jiEl
+      // 通用体系
+      universal: {
+        todayElement: todayUniversal.todayElement,
+        daji:    dajiColors.main,
+        dajiEl:  dajiEl,
+        ciji:    cijiColors.main,
+        cijiEl:  cijiEl,
+        buyi:    buyiColors.avoid.length ? buyiColors.avoid : buyiColors.main,
+        buyiEl:  buyiEl
+      },
+      // 个人体系
+      personal: {
+        colors:  xiColors.main,
+        element: xiEl,
+        accent:  (DATA.COLORS[yongEl] || DATA.COLORS['金']).accent,
+        accentElement: yongEl
+      }
     };
   }
 
@@ -141,8 +159,9 @@ const ReportGenerator = (function () {
     // ── 气场关键词 ───────────────────────────────────────────────────────────
     const auraKeywords = pickAuraKeywords(year, month, day, xi, dayMasterEl, yong);
 
-    // ── 颜色 ─────────────────────────────────────────────────────────────────
-    const colors = buildColors(xi, yong, ji);
+    // ── 颜色（通用 + 个人） ────────────────────────────────────────────────────
+    const todayUniversal = Engine.getTodayUniversalColors(todayInfo);
+    const colors = buildColors(xi, yong, ji, todayUniversal);
 
     // ── 穿搭风格 ─────────────────────────────────────────────────────────────
     const style = buildStyle(xi, gender);

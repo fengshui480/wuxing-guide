@@ -232,12 +232,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
     document.getElementById('aura-keywords').innerHTML = kwHtml;
 
-    // ── 开运色卡 ──────────────────────────────────────────────────────────
+    // ── 开运色卡（通用 + 个人双体系） ────────────────────────────────────────
     var c = report.colors;
+    var u = c.universal;
+    var p = c.personal;
     var colorHtml =
-      renderColorGroup('主色（喜神 · ' + c.xiElement + '）',  c.mainAll,   'main')   +
-      renderColorGroup('辅色（用神 · ' + c.yongElement + '）', c.accentAll, 'accent') +
-      renderColorGroup('避忌色（忌神 · ' + c.jiElement + '）', c.avoidAll,  'avoid');
+      '<div class="color-section-header">今日通用开运色 <span class="color-section-note">· 今日日干属「' + u.todayElement + '」</span></div>' +
+      renderColorGroup('大吉色 · ' + u.dajiEl + '系', u.daji, 'daji') +
+      renderColorGroup('次吉色 · ' + u.cijiEl + '系', u.ciji, 'ciji') +
+      '<div class="color-section-divider"></div>' +
+      '<div class="color-section-header">你的专属加持色 <span class="color-section-note">· 基于八字喜用神「' + p.element + '」</span></div>' +
+      renderColorGroup('专属主色 · ' + p.element + '系', p.colors, 'personal') +
+      renderColorGroup('专属辅色 · ' + p.accentElement + '系', p.accent, 'accent') +
+      '<div class="color-section-divider"></div>' +
+      renderColorGroup('今日避忌色 · ' + u.buyiEl + '系', u.buyi, 'avoid');
     document.getElementById('color-groups').innerHTML = colorHtml;
 
     // ── 命定穿搭 ──────────────────────────────────────────────────────────
